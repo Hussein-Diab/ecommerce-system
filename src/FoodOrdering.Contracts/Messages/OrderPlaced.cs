@@ -1,12 +1,13 @@
-using System.Runtime.CompilerServices;
 
+namespace FoodOrdering.Contracts.Messages;
 public class OrderPlaced : IntegrationMessage
 {
-    public int OrderId { get; set; }
-    public int CustomerId { get; set; }
-    public String CustomerName { get; set; } = string.Empty;
-    public String DeliveryAddress { get; set; } = string.Empty;
-    public int PhoneNumber { get; set; }
-    public List<OrderPlacedItem> items { get; set; } = [];
+    public Guid OrderId { get; set; } = Guid.NewGuid();
+    public string CustomerId { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public string DeliveryAddress { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public List<OrderPlacedItem> Items { get; set; } = [];
+    public decimal TotalAmount {get;set;}
 
 }

@@ -1,10 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+
+namespace FoodOrdering.Contracts.Messages;
 public class ReviewSubmitted : IntegrationMessage
 {
-    public int ReviewId { get; set; }
-    public int OrderId { get; set; }
+    public Guid ReviewId { get; set; } = Guid.NewGuid();
+    public Guid OrderId { get; set; } = Guid.NewGuid();
     public int CustomerId { get; set; }
-    [Range(1, 5)]
     public int Rating { get; set; }
-    public String Comment {get;set;} =string.Empty;
+    public string Comment {get;set;} =string.Empty;
 }

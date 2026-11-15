@@ -1,8 +1,8 @@
-using System.Diagnostics.Contracts;
 
+namespace FoodOrdering.Contracts.Messages;
 public class OrderCancelled : IntegrationMessage
 {
-    public int OrderId {get;set;}
-    public int CustomerId {get;set;}
-    public String Reason {get;set;}= string.Empty;
+    public Guid OrderId { get; set; } = Guid.NewGuid();
+    public string CustomerId { get; set; }
+    public string Reason { get; set; } = string.Empty;
 }

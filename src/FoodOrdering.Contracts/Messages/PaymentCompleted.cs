@@ -1,9 +1,10 @@
+namespace FoodOrdering.Contracts.Messages;
 public class PaymentCompleted : IntegrationMessage
 {
-    public int OrderId {get;set;}
-    public int TransactionId {get;set;}
-    public decimal Amount {get;set;}
-    public String PaymentMethod {get;set;}= string.Empty;
-    
+    public Guid OrderId { get; set; } = Guid.NewGuid();
+    public string TransactionId { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+
 
 }
