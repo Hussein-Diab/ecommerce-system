@@ -1,4 +1,5 @@
 namespace ECommerce.Contracts.Constants;
+
 public static class RoutingKeys
 
 {
@@ -6,6 +7,9 @@ public static class RoutingKeys
     {
         // A single topic exchange handles both Client -> Admin and Admin -> Client directions
         public const string Default = "app.events";
+
+        // Failed messages are re-routed here after all retries
+        public const string DeadLetter = "app.dlx";
     }
     public static class Keys
     {
@@ -25,9 +29,11 @@ public static class RoutingKeys
         public const string AdminOrders = "admin.orders";
         public const string AdminPayments = "admin.payments";
         public const string AdminReviews = "admin.reviews";
+        public const string AdminDeadLetter = "admin.dlq";
 
         // Client queues (Admin -> Client)
         public const string ClientOrderUpdates = "client.order-updates";
         public const string ClientProducts = "client.products";
+        public const string ClientDeadLetter = "client.dlq";
     }
 }
