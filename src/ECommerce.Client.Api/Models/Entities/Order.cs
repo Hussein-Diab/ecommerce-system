@@ -1,5 +1,7 @@
-namespace ECommerce.Client.Api.Models.Entities;
+
 using ECommerce.Contracts.Enums;
+namespace ECommerce.Client.Api.Models.Entities;
+
 public class Order
 {
     public Guid Id { get; set; }

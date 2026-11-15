@@ -14,7 +14,6 @@ public static class DbSeeder
         {
             await roleManager.CreateAsync(new IdentityRole("Customer"));
         }
-        // Ask the container for the database
         var db = services.GetRequiredService<ApplicationDbContext>();
 
         // TEMPORARY: removed on Day 4 when products come from Admin via RabbitMQ
