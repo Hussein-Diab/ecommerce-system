@@ -2,7 +2,8 @@
 namespace FoodOrdering.Contracts.Messages;
 public class OrderCancelled : IntegrationMessage
 {
-    public Guid OrderId { get; set; } = Guid.NewGuid();
-    public string CustomerId { get; set; }
+    public required Guid OrderId { get; set; } 
+    
+    public required string CustomerId { get; set; } = string.Empty;
     public string Reason { get; set; } = string.Empty;
 }

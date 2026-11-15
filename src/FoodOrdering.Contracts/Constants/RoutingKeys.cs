@@ -1,3 +1,4 @@
+namespace FoodOrdering.Contracts.Constants;
 public static class RoutingKeys
 
 {
