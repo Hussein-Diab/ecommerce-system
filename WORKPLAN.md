@@ -18,7 +18,7 @@
 │  DB: FoodClientDb        │      └─────────────────────┘      │  AI: review sentiment    │
 └──────────────────────────┘                                   │  DB: FoodAdminDb         │
                                                                └──────────────────────────┘
-          both reference ──▶  FoodOrdering.Contracts (message classes only)
+          both reference ──▶  ECommerce.Contracts (message classes only)
 ```
 
 **Who owns what.** This is the main design decision, so be ready to defend it:
@@ -35,12 +35,12 @@
 ## 1. Solution structure
 
 ```
-FoodOrdering.sln
+ECommerce.sln
 ├─ src/
-│  ├─ FoodOrdering.Contracts/      class library: messages, enums, routing-key constants. NO EF, NO logic.
-│  ├─ FoodOrdering.Client.Web/     MVC app for customers
-│  └─ FoodOrdering.Admin.Web/      MVC app for staff
-├─ tests/FoodOrdering.Tests/       (bonus) xUnit
+│  ├─ ECommerce.Contracts/      class library: messages, enums, routing-key constants. NO EF, NO logic.
+│  ├─ ECommerce.Client.Web/     MVC app for customers
+│  └─ ECommerce.Admin.Web/      MVC app for staff
+├─ tests/ECommerce.Tests/       (bonus) xUnit
 ├─ docs/                           architecture diagram, message catalogue, screenshots
 └─ docker-compose.yml              RabbitMQ (+ SQL Server, + the apps for the bonus)
 ```
@@ -117,7 +117,7 @@ Each phase has the same parts: **Learn** (what to research first), **Build**, **
 
 **Exam questions:** Why does OrderItem copy the price instead of pointing to the menu price? Why must controllers not use DbContext directly? Why is DbContext Scoped?
 
-### Day 3 (Mon 16): Admin app with database, roles and menu CRUD
+### Day 3 (Mon 16): product CRUD + stock
 **Build**
 - Identity with roles `Admin`, `Manager`, `Staff`. Seed the roles and one admin user at startup.
 - `[Authorize(Roles = ...)]` for the rules, for example: Staff manage orders, Manager sees reports, Admin manages the menu and users.
