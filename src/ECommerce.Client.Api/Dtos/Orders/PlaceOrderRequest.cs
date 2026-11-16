@@ -8,6 +8,7 @@ public class PlaceOrderRequest
     public string ShippingAddress { get; set; } = string.Empty;
     [Phone]
     [MaxLength(20)]
+    [Required]
     public string PhoneNumber { get; set; } = string.Empty;
     [Required]
     [MinLength(1)]
