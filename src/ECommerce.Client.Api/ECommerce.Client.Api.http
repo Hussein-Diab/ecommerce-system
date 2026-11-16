@@ -1,6 +1,105 @@
-@ECommerce.Client.Api_HostAddress = http://localhost:5285
+@baseUrl = https://localhost:7102
+@email = ali@test.com
+@password = Test123!
 
-GET {{ECommerce.Client.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. Register (valid): expect 200 + a token
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Ali Hassan",
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "address": "12 Main Street, Beirut",
+  "phone": "+96170123456"
+}
+
+### 2. Register the SAME email again: expect 400 (DuplicateEmail)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Ali Hassan",
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "address": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456"
+}
+
+### 3. Register with a password that is too short: expect 400 (from the DTO attribute)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Sara",
+  "email": "sara@test.com",
+  "password": "abc",
+  "address": "Somewhere",
+  "phoneNumber": "+96170111222"
+}
+
+### 4. Register with a password that breaks Identity rules (no digit, no symbol): expect 400
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Sara",
+  "email": "sara@test.com",
+  "password": "abcdefgh",
+  "address": "Somewhere",
+  "phoneNumber": "+96170111222"
+}
+
+### 5. Register with an invalid email: expect 400
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Sara",
+  "email": "not-an-email",
+  "password": "Test123!",
+  "address": "Somewhere",
+  "phoneNumber": "+96170111222"
+}
+
+### 6. Login (correct): expect 200 + a token
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
 
 ###
+@token = {{login.response.body.$.token}}
+
+### 7. Login with a WRONG password: expect 401
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "WrongPass1!"
+}
+
+### 8. Login with an email that does NOT exist: expect 401 (the SAME message as test 7)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nobody@test.com",
+  "password": "WrongPass1!"
+}
+
+### 9. /me WITHOUT a token: expect 401
+GET {{baseUrl}}/api/auth/me
+
+### 10. /me WITH the token: expect 200 + your profile
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### 11. /me with a TAMPERED token: expect 401
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}x
