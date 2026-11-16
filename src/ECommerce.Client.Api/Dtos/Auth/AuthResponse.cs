@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+
 namespace ECommerce.Client.Api.Dtos.Auth;
 
 public class AuthResponse

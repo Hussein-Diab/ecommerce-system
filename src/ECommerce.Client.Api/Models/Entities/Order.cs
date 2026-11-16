@@ -9,7 +9,7 @@ public class Order
     public string CustomerName { get; set; } = string.Empty;
     public string ShippingAddress { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-    public OrderStatus Status { get; set; }          // from your Contracts project
+    public OrderStatus Status { get; set; }   
     public decimal TotalAmount { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public DateTime? EstimatedDeliveryTime { get; set; }

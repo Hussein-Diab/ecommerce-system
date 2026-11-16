@@ -23,7 +23,7 @@ Content-Type: application/json
   "email": "{{email}}",
   "password": "{{password}}",
   "address": "12 Main Street, Beirut",
-  "phoneNumber": "+96170123456"
+  "phone": "+96170123456"
 }
 
 ### 3. Register with a password that is too short: expect 400 (from the DTO attribute)
@@ -103,3 +103,244 @@ Authorization: Bearer {{token}}
 ### 11. /me with a TAMPERED token: expect 401
 GET {{baseUrl}}/api/auth/me
 Authorization: Bearer {{token}}x
+############################################################
+#                 PART D: PRODUCTS & ORDERS
+#  Run "6. Login" above first, so {{token}} is filled.
+############################################################
+
+@availableProductId = 1
+@lowStockProductId = 2
+@outOfStockProductId = 3
+@unavailableProductId = 4
+
+### D1. Products, no token: expect 200, page=1, pageSize=12, totalCount = number of AVAILABLE products
+GET {{baseUrl}}/api/products
+
+### D2. Filter by category: expect only Electronics
+GET {{baseUrl}}/api/products?category=Electronics
+
+### D3. Search by name: expect only names containing "mouse"
+GET {{baseUrl}}/api/products?search=mouse
+
+### D4. Product details: expect 200
+GET {{baseUrl}}/api/products/{{availableProductId}}
+
+### D5. Product that doesn't exist: expect 404 "Product not found."
+GET {{baseUrl}}/api/products/999
+
+### D6. Pagination page 1 of size 2: expect 2 items, hasNext: true
+GET {{baseUrl}}/api/products?page=1&pageSize=2
+
+### D7. Pagination page 2 of size 2: expect the NEXT 2 items (no repeats from D6)
+GET {{baseUrl}}/api/products?page=2&pageSize=2
+
+### D8. Page far past the end: expect 200 with "items": []
+GET {{baseUrl}}/api/products?page=999
+
+### D9. pageSize too big: expect 400 (Range 1–50)
+GET {{baseUrl}}/api/products?pageSize=500
+
+### D10. page = 0: expect 400
+GET {{baseUrl}}/api/products?page=0
+
+### D11. Place order WITHOUT a token: expect 401
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{availableProductId}}, "quantity": 1 } ]
+}
+
+### D12. Place a VALID order: expect 201 + Location header. CHECK totalAmount by hand!
+# @name placeOrder
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{availableProductId}}, "quantity": 2 } ]
+}
+
+###
+@orderId = {{placeOrder.response.body.$.id}}
+
+### D13. Unavailable product: expect 400 "... is not available."
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{unavailableProductId}}, "quantity": 1 } ]
+}
+
+### D14. Product with stock 0: expect 400 "Only 0 of ... in stock."
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{outOfStockProductId}}, "quantity": 1 } ]
+}
+
+### D15. Quantity higher than stock (low-stock product has 5): expect 400 "Only 5 of ... in stock."
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{lowStockProductId}}, "quantity": 6 } ]
+}
+
+### D16. Same product twice, 3 + 3 = 6 > stock 5: expect 400 (proves the MERGE works)
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [
+    { "productId": {{lowStockProductId}}, "quantity": 3 },
+    { "productId": {{lowStockProductId}}, "quantity": 3 }
+  ]
+}
+
+### D17. Same product twice, 1 + 2: expect 201 with ONE item line, quantity 3
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [
+    { "productId": {{availableProductId}}, "quantity": 1 },
+    { "productId": {{availableProductId}}, "quantity": 2 }
+  ]
+}
+
+### D18. Quantity 0: expect 400 (from [Range(1, 100)] on the DTO)
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{availableProductId}}, "quantity": 0 } ]
+}
+
+### D19. Empty items list: expect 400 (from [MinLength(1)])
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": []
+}
+
+### D20. Product that doesn't exist: expect 400 "Product 999 does not exist."
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shippingAddress": "12 Main Street, Beirut",
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": 999, "quantity": 1 } ]
+}
+
+### D21. Missing address: expect 400 (from [Required])
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phoneNumber": "+96170123456",
+  "items": [ { "productId": {{availableProductId}}, "quantity": 1 } ]
+}
+
+### D22. My orders: expect 200, only YOUR orders, NEWEST first
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{token}}
+
+### D23. Order details: expect 200 with the items included
+GET {{baseUrl}}/api/orders/{{orderId}}
+Authorization: Bearer {{token}}
+
+### D24. Order id that doesn't exist: expect 404 "Order not found."
+GET {{baseUrl}}/api/orders/00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{token}}
+
+### D25. Malformed id (not a Guid): expect 404 (the route constraint doesn't match)
+GET {{baseUrl}}/api/orders/hello
+Authorization: Bearer {{token}}
+
+############################################################
+#   SECOND USER (B): for the IDOR tests
+############################################################
+
+### D26. Register user B: 200 the first time (400 DuplicateEmail on later runs, which is fine)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Sara Khalil",
+  "email": "sara.b@test.com",
+  "password": "Test123!",
+  "address": "5 Hamra Street, Beirut",
+  "phoneNumber": "+96171222333"
+}
+
+### D27. Login user B: expect 200
+# @name loginB
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "sara.b@test.com",
+  "password": "Test123!"
+}
+
+###
+@tokenB = {{loginB.response.body.$.token}}
+
+### D28. User B lists orders: expect 200 with NONE of user A's orders
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{tokenB}}
+
+### D29. User B opens user A's order: expect 404 (NOT 403, NOT the order)
+GET {{baseUrl}}/api/orders/{{orderId}}
+Authorization: Bearer {{tokenB}}
+
+### D30. User B tries to cancel user A's order: expect 404, and the order must STAY Pending
+POST {{baseUrl}}/api/orders/{{orderId}}/cancel
+Authorization: Bearer {{tokenB}}
+
+############################################################
+#   CANCEL (back to user A)
+############################################################
+
+### D31. User A cancels their Pending order: expect 204
+POST {{baseUrl}}/api/orders/{{orderId}}/cancel
+Authorization: Bearer {{token}}
+
+### D32. Cancel the SAME order again: expect 400 "Only pending orders can be cancelled."
+POST {{baseUrl}}/api/orders/{{orderId}}/cancel
+Authorization: Bearer {{token}}
+
+### D33. Check the order now shows "status": "Cancelled"
+GET {{baseUrl}}/api/orders/{{orderId}}
+Authorization: Bearer {{token}}

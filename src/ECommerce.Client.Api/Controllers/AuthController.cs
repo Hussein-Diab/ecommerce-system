@@ -60,7 +60,7 @@ public class AuthController : AppController
             Email = request.Email,
             FullName = request.FullName,
             Address = request.Address,
-            PhoneNumber = request.Phone
+            PhoneNumber = request.PhoneNumber
         };
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)

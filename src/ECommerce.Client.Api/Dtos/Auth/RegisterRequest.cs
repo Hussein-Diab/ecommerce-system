@@ -18,5 +18,5 @@ public class RegisterRequest
     [Required]
     [Phone]
     [MaxLength(20)]
-    public string Phone { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
 }

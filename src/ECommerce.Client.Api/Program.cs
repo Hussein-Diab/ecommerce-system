@@ -1,13 +1,14 @@
-using ECommerce.Client.Api.Data;              // ApplicationDbContext, DbSeeder
-using ECommerce.Client.Api.Models.Entities;   // ApplicationUser
+using ECommerce.Client.Api.Data;
+using ECommerce.Client.Api.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ECommerce.Client.Api.Settings;
-using System.Security.Claims;                          // ClaimTypes
-using System.Text;                                      // Encoding
-using Microsoft.AspNetCore.Authentication.JwtBearer;    // JwtBearerDefaults
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ECommerce.Client.Api.Services;
+using ECommerce.Client.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -71,32 +72,26 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddControllers();
 
-// Part D will add here: repositories and services (AddScoped<...>)
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
-// =====================================================================
-// 2. SEED THE DATABASE (roles + temporary products)
-//    Runs once at startup, before the app accepts requests.
-// =====================================================================
 using (var scope = app.Services.CreateScope())
 {
     await DbSeeder.SeedAsync(scope.ServiceProvider);
 }
-
-// =====================================================================
-// 3. HTTP PIPELINE (middleware). ORDER MATTERS: each request passes
-//    through these in this order.
-// =====================================================================
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();   // https://localhost:7102/openapi/v1.json, dev only
+    app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization();   
+app.UseAuthorization();
 
 app.MapControllers();
 
