@@ -196,6 +196,10 @@ namespace ECommerce.Client.Api.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("tinyint(1)");
 

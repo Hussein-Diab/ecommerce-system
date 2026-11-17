@@ -24,7 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(p => p.Price).HasPrecision(18, 2);
             e.Property(p => p.Category).HasMaxLength(100);
             e.Property(p => p.Description).HasMaxLength(1000);
-
+            e.Property(p => p.ImageUrl).HasMaxLength(500);   // otherwise MySQL makes it longtext
         });
         modelBuilder.Entity<Order>(e =>
         {

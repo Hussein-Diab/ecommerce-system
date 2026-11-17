@@ -12,4 +12,6 @@ public class ProductChanged : IntegrationMessage
     public bool IsAvailable { get; set; }
     public int StockQuantity { get; set; }
 
+    // URL of the product image (only the URL travels in the message, never the image itself)
+    public string? ImageUrl { get; set; }
 }

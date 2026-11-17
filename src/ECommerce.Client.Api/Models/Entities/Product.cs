@@ -12,4 +12,7 @@ public class Product
     public bool IsAvailable { get; set; }
     public DateTime LastUpdatedUtc { get; set; } = DateTime.UtcNow;
     public int StockQuantity { get; set; }
+
+    // URL of the product image; null = no image (the Web app shows a placeholder)
+    public string? ImageUrl { get; set; }
 }

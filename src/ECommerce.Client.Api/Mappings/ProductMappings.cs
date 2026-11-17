@@ -14,6 +14,7 @@ public static class ProductMappings
         Price = product.Price,
         Category = product.Category,
         StockQuantity = product.StockQuantity,
-        IsAvailable = product.IsAvailable
+        IsAvailable = product.IsAvailable,
+        ImageUrl = product.ImageUrl
     };
 }

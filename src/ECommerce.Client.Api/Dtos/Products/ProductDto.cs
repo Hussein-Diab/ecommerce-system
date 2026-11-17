@@ -9,5 +9,5 @@ public class ProductDto
     public string Category { get; set; } = string.Empty;
     public int StockQuantity { get; set; }
     public bool IsAvailable { get; set; }
-
+    public string? ImageUrl { get; set; }
 }
