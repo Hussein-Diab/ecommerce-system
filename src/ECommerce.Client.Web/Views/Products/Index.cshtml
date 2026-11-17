@@ -1,0 +1,87 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "Products";
+    var paged = Model.Products;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-2 mb-md-0">Products</h1>
+    @if (paged.TotalCount > 0)
+    {
+        <span class="text-muted">@paged.TotalCount product(s) found</span>
+    }
+</div>
+
+@* ---------- Search + filter (GET form: filters end up in the URL, bookmarkable) ---------- *@
+<form asp-action="Index" method="get" class="row g-2 mb-4">
+    <div class="col-md-5">
+        <input asp-for="Search" class="form-control" placeholder="Search products..." aria-label="Search products" />
+    </div>
+    <div class="col-md-4">
+        <select asp-for="Category" asp-items="Model.Categories" class="form-select" aria-label="Category">
+            <option value="">All categories</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">Search</button>
+        @if (Model.HasFilters)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+        }
+    </div>
+</form>
+
+@* ---------- Content: error / empty / grid ---------- *@
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+else if (paged.Items.Count == 0)
+{
+    <div class="text-center text-muted py-5">
+        <p class="mb-2">No products match your search.</p>
+        @if (Model.HasFilters)
+        {
+            <a asp-action="Index">Show all products</a>
+        }
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+        @foreach (var product in paged.Items)
+        {
+            <div class="col">
+                <partial name="_ProductCard" model="product" />
+            </div>
+        }
+    </div>
+
+    @* ---------- Pagination: links keep the current filters ---------- *@
+    @if (paged.TotalPages > 1)
+    {
+        <nav aria-label="Product pages" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(paged.HasPrevious ? "" : "disabled")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(paged.Page - 1)"
+                       asp-route-category="@Model.Category"
+                       asp-route-search="@Model.Search">Previous</a>
+                </li>
+
+                <li class="page-item disabled">
+                    <span class="page-link">Page @paged.Page of @paged.TotalPages</span>
+                </li>
+
+                <li class="page-item @(paged.HasNext ? "" : "disabled")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(paged.Page + 1)"
+                       asp-route-category="@Model.Category"
+                       asp-route-search="@Model.Search">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

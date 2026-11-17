@@ -1,0 +1,87 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Your cart";
+}
+
+<h1 class="h3 mb-4">Your cart</h1>
+
+@if (Model.IsEmpty)
+{
+    <div class="text-center text-muted py-5">
+        <p class="mb-3">Your cart is empty.</p>
+        <a asp-controller="Products" asp-action="Index" class="btn btn-primary">Start shopping</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col" class="text-end">Price</th>
+                    <th scope="col" class="text-center cart-qty-col">Quantity</th>
+                    <th scope="col" class="text-end">Total</th>
+                    <th scope="col"><span class="visually-hidden">Remove</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@ProductImage.Url(item.ImageUrl)" alt="@item.Name"
+                                     class="rounded border cart-thumb"
+                                     onerror="this.onerror=null;this.src='@ProductImage.Placeholder';" />
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">@item.Name</a>
+                            </div>
+                        </td>
+
+                        <td class="text-end">$@(item.Price.ToString("0.00"))</td>
+
+                        <td>
+                            @* One small form per row: it only sends its own productId *@
+                            <form asp-action="UpdateQuantity" method="post" class="d-flex gap-2 justify-content-center">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <input type="number" name="quantity" value="@item.Quantity"
+                                       min="0" max="100" class="form-control form-control-sm cart-qty-input"
+                                       aria-label="Quantity of @item.Name" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                            </form>
+                        </td>
+
+                        <td class="text-end fw-semibold">$@(item.LineTotal.ToString("0.00"))</td>
+
+                        <td class="text-end">
+                            <form asp-action="Remove" method="post">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Total (@Model.ItemCount item(s))</th>
+                    <th class="text-end fs-5">$@(Model.Total.ToString("0.00"))</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <p class="text-muted small">Prices and stock are confirmed when you place your order.</p>
+
+    <div class="d-flex flex-wrap gap-2 justify-content-between">
+        <div class="d-flex gap-2">
+            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-primary">Continue shopping</a>
+            <form asp-action="Clear" method="post">
+                <button type="submit" class="btn btn-outline-danger">Clear cart</button>
+            </form>
+        </div>
+        @* Orders/Checkout is built in E6. It has [Authorize], so guests are sent to Login first. *@
+        <a asp-controller="Orders" asp-action="Checkout" class="btn btn-success btn-lg">Proceed to checkout</a>
+    </div>
+}

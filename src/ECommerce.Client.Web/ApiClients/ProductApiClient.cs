@@ -35,4 +35,9 @@ public class ProductApiClient : IProductApiClient
     {
         return ApiResponseReader.SendAsync<ProductDto>(() => _http.GetAsync($"api/products/{id}"));
     }
+
+    public Task<ApiResult<List<string>>> GetCategoriesAsync()
+    {
+        return ApiResponseReader.SendAsync<List<string>>(() => _http.GetAsync("api/products/categories"));
+    }
 }

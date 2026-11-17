@@ -1,6 +1,6 @@
 using ECommerce.Client.Web.ApiClients;
 using ECommerce.Client.Web.Handlers;
-// using ECommerce.Client.Web.Services;
+using ECommerce.Client.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
@@ -47,7 +47,8 @@ builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(c => c.BaseA
 builder.Services.AddHttpClient<IOrderApiClient, OrderApiClient>(c => c.BaseAddress = new Uri(apiBaseUrl))
     .AddHttpMessageHandler<BearerTokenHandler>();
 
-// builder.Services.AddScoped<ICartService, CartService>();
+// ---- Cart (stored in the session) ----------------------------------
+builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
