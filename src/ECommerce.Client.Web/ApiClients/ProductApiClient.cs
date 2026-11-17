@@ -25,7 +25,7 @@ public class ProductApiClient : IProductApiClient
         if (!string.IsNullOrWhiteSpace(search))
             query["search"] = search;
 
-     
+
         var url = QueryHelpers.AddQueryString("api/products", query);
 
         return ApiResponseReader.SendAsync<PagedResult<ProductDto>>(() => _http.GetAsync(url));
@@ -34,5 +34,9 @@ public class ProductApiClient : IProductApiClient
     public Task<ApiResult<ProductDto>> GetProductAsync(int id)
     {
         return ApiResponseReader.SendAsync<ProductDto>(() => _http.GetAsync($"api/products/{id}"));
+    }
+    public Task<ApiResult<List<string>>> GetCategoriesAsync()
+    {
+        return ApiResponseReader.SendAsync<List<string>>(() => _http.GetAsync("api/products/categories"));
     }
 }
