@@ -16,24 +16,24 @@ public class ProductRepository : IProductRepository
 
     public async Task<(List<Product> Items, int TotalCount)> GetAvailablePagedAsync(ProductQueryParameters query)
     {
-   
+
         var products = _db.Products
-            .AsNoTracking()               
+            .AsNoTracking()
             .Where(p => p.IsAvailable);
 
         if (!string.IsNullOrWhiteSpace(query.Category))
             products = products.Where(p => p.Category == query.Category);
 
         if (!string.IsNullOrWhiteSpace(query.Search))
-            products = products.Where(p => p.Name.Contains(query.Search));   
+            products = products.Where(p => p.Name.Contains(query.Search));
         var totalCount = await products.CountAsync();
 
         var items = await products
             .OrderBy(p => p.Name)
-            .ThenBy(p => p.Id)          
+            .ThenBy(p => p.Id)
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .ToListAsync();            
+            .ToListAsync();
 
         return (items, totalCount);
     }
@@ -42,7 +42,7 @@ public class ProductRepository : IProductRepository
     {
         return await _db.Products
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == id);  
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<List<Product>> GetByIdsAsync(IEnumerable<int> ids)
@@ -50,6 +50,17 @@ public class ProductRepository : IProductRepository
         return await _db.Products
             .AsNoTracking()
             .Where(p => ids.Contains(p.Id))
+            .ToListAsync();
+    }
+    public async Task<List<string>> GetCategoriesAsync()
+    {
+        // SQL: SELECT DISTINCT Category FROM Products WHERE IsAvailable = 1 ORDER BY Category
+        return await _db.Products
+            .AsNoTracking()
+            .Where(p => p.IsAvailable)
+            .Select(p => p.Category)     // only the one column, not whole products
+            .Distinct()
+            .OrderBy(c => c)
             .ToListAsync();
     }
 }

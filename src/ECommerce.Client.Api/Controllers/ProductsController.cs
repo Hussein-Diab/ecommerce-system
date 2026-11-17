@@ -30,8 +30,14 @@ public class ProductsController : AppController   // route: api/products
         var result = await _productService.GetProductAsync(id);
 
         if (!result.Success)
-            return FailureResult(result);   
+            return FailureResult(result);
 
         return Ok(result.Data);
+    }
+    // GET api/products/categories
+    [HttpGet("categories")]
+    public async Task<ActionResult<List<string>>> GetCategories()
+    {
+        return Ok(await _productService.GetCategoriesAsync());
     }
 }

@@ -9,4 +9,5 @@ public interface IProductRepository
 
     Task<Product?> GetByIdAsync(int id);
     Task<List<Product>> GetByIdsAsync(IEnumerable<int> ids);
+    Task<List<string>> GetCategoriesAsync();
 }

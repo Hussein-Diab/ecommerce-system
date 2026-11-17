@@ -17,11 +17,11 @@ public class ProductService : IProductService
 
     public async Task<PagedResult<ProductDto>> GetProductsAsync(ProductQueryParameters query)
     {
-        var (items, totalCount) = await _productRepository.GetAvailablePagedAsync(query); 
+        var (items, totalCount) = await _productRepository.GetAvailablePagedAsync(query);
 
         return new PagedResult<ProductDto>
         {
-            Items = items.Select(p => p.ToDto()).ToList(),  
+            Items = items.Select(p => p.ToDto()).ToList(),
             Page = query.Page,
             PageSize = query.PageSize,
             TotalCount = totalCount
@@ -37,4 +37,5 @@ public class ProductService : IProductService
 
         return ServiceResult<ProductDto>.Ok(product.ToDto());
     }
+    public Task<List<string>> GetCategoriesAsync() => _productRepository.GetCategoriesAsync();
 }

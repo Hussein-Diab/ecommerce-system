@@ -8,4 +8,5 @@ public interface IProductService
 {
     Task<PagedResult<ProductDto>> GetProductsAsync(ProductQueryParameters query);
     Task<ServiceResult<ProductDto>> GetProductAsync(int id);
+    Task<List<string>> GetCategoriesAsync();
 }
